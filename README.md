@@ -137,7 +137,7 @@ Invoke-RestMethod `
 $body = @{
     idInstance = '1101000001'
     apiTokenInstance = 'your_token'
-    chatId = '79951963241@c.us'
+    chatId = '79991234567@c.us'
     message = 'TEST ONLY'
     typingTime = 3000
 } | ConvertTo-Json
@@ -155,7 +155,7 @@ Invoke-RestMethod `
 $body = @{
     idInstance = '1101000001'
     apiTokenInstance = 'your_token'
-    chatId = '79951963241@c.us'
+    chatId = '79991234567@c.us'
     urlFile = 'https://example.com/files/report.pdf'
     fileName = 'report.pdf'
     caption = 'Test file'
@@ -172,10 +172,10 @@ Invoke-RestMethod `
 
 Чтобы не отправить сообщение случайно другому человеку, можно тестировать на своем личном номере.
 
-Пример `chatId` для номера `+79951963241`:
+Пример `chatId` для личного номера:
 
 ```text
-79951963241@c.us
+79991234567@c.us
 ```
 
 `quotedMessageId` — ID сообщения, на которое отправляется ответ. Для обычного теста можно не передавать.
