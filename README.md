@@ -25,10 +25,12 @@
 ## Project Structure
 
 ```text
-cmd/server                 entrypoint
-internal/config            runtime config
-internal/greenapi          Green API client
-internal/httpapi           Fiber handlers, validation, embedded UI
+cmd/server                 application entrypoint
+internal/config            runtime config loading and validation
+internal/greenapi          upstream client, factory, transport, errors
+internal/httpapi           Fiber app, routes, handlers, middleware, DTOs
+internal/server            application bootstrap and graceful shutdown
+internal/utils             shared environment helpers
 ```
 
 ## API
@@ -206,6 +208,8 @@ Invoke-RestMethod `
 ```powershell
 go test ./...
 ```
+
+Проверялись пакеты `cmd/server`, `internal/server`, `internal/greenapi`, `internal/httpapi`, `internal/config`, `internal/utils`.
 
 В текущей Windows-среде package tests проходят, но cleanup временного Go cache может завершаться с `Access is denied` уже после выполнения самих тестов.
 
