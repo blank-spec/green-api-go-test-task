@@ -3,9 +3,10 @@ package config
 import (
 	"fmt"
 	"net/url"
-	"os"
 	"strings"
 	"time"
+
+	"test-task/internal/utils"
 )
 
 const (
@@ -21,46 +22,22 @@ type Config struct {
 }
 
 func Load() (Config, error) {
-	baseURL := strings.TrimRight(getEnv("GREEN_API_BASE_URL", defaultBaseURL), "/")
+	baseURL := strings.TrimRight(utils.GetEnv("GREEN_API_BASE_URL", defaultBaseURL), "/")
 	if err := validateBaseURL(baseURL); err != nil {
 		return Config{}, err
 	}
 
-	requestTimeout, err := loadDurationEnv("GREEN_API_REQUEST_TIMEOUT", defaultRequestTimeout)
+	requestTimeout, err := utils.LoadDurationEnv("GREEN_API_REQUEST_TIMEOUT", defaultRequestTimeout)
 	if err != nil {
 		return Config{}, err
 	}
 
 	cfg := Config{
-		HTTPAddr:       getEnv("HTTP_ADDR", defaultHTTPAddr),
+		HTTPAddr:       utils.GetEnv("HTTP_ADDR", defaultHTTPAddr),
 		BaseURL:        baseURL,
 		RequestTimeout: requestTimeout,
 	}
 	return cfg, nil
-}
-
-func getEnv(key, fallback string) string {
-	if value := strings.TrimSpace(os.Getenv(key)); value != "" {
-		return value
-	}
-	return fallback
-}
-
-func loadDurationEnv(key string, fallback time.Duration) (time.Duration, error) {
-	value := strings.TrimSpace(os.Getenv(key))
-	if value == "" {
-		return fallback, nil
-	}
-
-	duration, err := time.ParseDuration(value)
-	if err != nil {
-		return 0, fmt.Errorf("parse %s: %w", key, err)
-	}
-	if duration <= 0 {
-		return 0, fmt.Errorf("%s must be greater than zero", key)
-	}
-
-	return duration, nil
 }
 
 func validateBaseURL(rawURL string) error {
