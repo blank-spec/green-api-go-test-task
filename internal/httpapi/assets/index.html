@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green API Form</title>
+  <style>
+    :root {
+      --page-bg: #f4f2ec;
+      --panel: #ffffff;
+      --line: #d7d5ce;
+      --text: #35342f;
+      --muted: #7f7b72;
+      --button: #fbfaf7;
+      --button-hover: #f0eee8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f8f7f3 0%, var(--page-bg) 100%);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 16px 36px;
+    }
+
+    .frame {
+      border: 1px solid #cac8c1;
+      background: #fbfbf8;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 22px;
+      padding: 34px 28px 28px;
+    }
+
+    .left {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+    }
+
+    input,
+    textarea {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--panel);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #b9b5ad;
+      box-shadow: 0 0 0 3px rgba(90, 85, 75, 0.06);
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--button);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+    }
+
+    .response {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 8px;
+    }
+
+    .response-title {
+      font-size: 24px;
+      font-style: italic;
+      color: #55544e;
+    }
+
+    .status {
+      min-height: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status.success {
+      color: #2d7148;
+    }
+
+    .status.error {
+      color: #a63f3f;
+    }
+
+    pre {
+      margin: 0;
+      min-height: 650px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+    }
+
+    .brand {
+      text-align: right;
+      font-weight: 700;
+      color: #15833f;
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      pre {
+        min-height: 380px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="frame">
+      <div class="content">
+        <section class="left">
+          <div class="group">
+            <div class="label">Credentials</div>
+            <input id="idInstance" placeholder="idInstance">
+            <input id="apiTokenInstance" placeholder="apiTokenInstance">
+          </div>
+
+          <div class="group">
+            <button type="button" id="getSettingsBtn">getSettings</button>
+            <button type="button" id="getStateBtn">getStateInstance</button>
+          </div>
+
+          <div class="group">
+            <div class="label">Send Message</div>
+            <input id="messageChatId" placeholder="77771234567@c.us">
+            <textarea id="messageText" placeholder="Hello World!"></textarea>
+            <input id="messageQuotedId" placeholder="quotedMessageId (optional)">
+            <input id="messageTypingTime" type="number" min="1000" max="20000" placeholder="typingTime (optional)">
+            <button type="button" id="sendMessageBtn">sendMessage</button>
+          </div>
+
+          <div class="group">
+            <div class="label">Send File By Url</div>
+            <input id="fileChatId" placeholder="77771234567@c.us">
+            <input id="fileUrl" placeholder="https://my.site.com/img/horse.png">
+            <input id="fileName" placeholder="horse.png">
+            <textarea id="fileCaption" placeholder="caption (optional)"></textarea>
+            <input id="fileQuotedId" placeholder="quotedMessageId (optional)">
+            <input id="fileTypingTime" type="number" min="1000" max="20000" placeholder="typingTime (optional)">
+            <button type="button" id="sendFileBtn">sendFileByUrl</button>
+          </div>
+        </section>
+
+        <section class="response">
+          <div class="response-title">Ответ:</div>
+          <div class="status" id="status"></div>
+          <pre id="output">{
+  "message": "Введите idInstance и apiTokenInstance"
+}</pre>
+          <div class="brand">GREEN API</div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+
+    function getCredentials() {
+      return {
+        idInstance: document.getElementById("idInstance").value.trim(),
+        apiTokenInstance: document.getElementById("apiTokenInstance").value.trim()
+      };
+    }
+
+    function setStatus(text, mode) {
+      status.textContent = text;
+      status.className = "status" + (mode ? " " + mode : "");
+    }
+
+    function showJSON(data) {
+      output.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function cleanupPayload(payload) {
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === "" || payload[key] === undefined || payload[key] === null) {
+          delete payload[key];
+        }
+      });
+      return payload;
+    }
+
+    async function send(url, payload) {
+      setStatus("Выполняется запрос...");
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cleanupPayload(payload))
+      });
+
+      const text = await response.text();
+      let data;
+
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { raw: text };
+      }
+
+      showJSON(data);
+
+      if (!response.ok) {
+        setStatus("Ошибка " + response.status, "error");
+        return;
+      }
+
+      setStatus("Успешно " + response.status, "success");
+    }
+
+    document.getElementById("getSettingsBtn").addEventListener("click", () => {
+      send("/api/v1/settings", getCredentials());
+    });
+
+    document.getElementById("getStateBtn").addEventListener("click", () => {
+      send("/api/v1/state", getCredentials());
+    });
+
+    document.getElementById("sendMessageBtn").addEventListener("click", () => {
+      send("/api/v1/messages/text", {
+        ...getCredentials(),
+        chatId: document.getElementById("messageChatId").value.trim(),
+        message: document.getElementById("messageText").value,
+        quotedMessageId: document.getElementById("messageQuotedId").value.trim(),
+        typingTime: document.getElementById("messageTypingTime").value ? Number(document.getElementById("messageTypingTime").value) : undefined
+      });
+    });
+
+    document.getElementById("sendFileBtn").addEventListener("click", () => {
+      send("/api/v1/messages/file", {
+        ...getCredentials(),
+        chatId: document.getElementById("fileChatId").value.trim(),
+        urlFile: document.getElementById("fileUrl").value.trim(),
+        fileName: document.getElementById("fileName").value.trim(),
+        caption: document.getElementById("fileCaption").value,
+        quotedMessageId: document.getElementById("fileQuotedId").value.trim(),
+        typingTime: document.getElementById("fileTypingTime").value ? Number(document.getElementById("fileTypingTime").value) : undefined
+      });
+    });
+  </script>
+</body>
+</html>
