@@ -1,0 +1,7 @@
+.git
+.cache
+bin
+Dockerfile*
+README.md
+Doc.md
+*.log
